@@ -5,23 +5,13 @@ from rest_framework.views import APIView
 from rest_framework import viewsets
 
 
-from users.serializers import CreateUserSerializer
-
+from users.serializers import CreateUserSerializer , UpdateUserSerializer
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib import messages
 
 import requests
-# Create your views here.
 
-
-
-CLIENT_ID = '<client-id>'
-CLIENT_ID = '446LXZnjQrad8LxtMQnUTHlUsBn6bN2DPY2SyG3d'
-# EkneVcK1AwN7VrvvfhFKumgSRWXrrFfHMb3xcqWK
-CLIENT_SECRET = '<client-secret>'
-CLIENT_SECRET = '9S8YJekBNbVdgjvmvuU8BnPjIilhYl3IyiM0z5gecgLa9K9RhhtVALH9KYEi6xlsuQ37iDDinK4BTOySmjSQ0KzholoXZaGeEeCae0CtXHtf2ejyA5537iLcPSJ0w3rN'
-# 89DByPJNwHxDOW3PeNsqFZIPvdpZdAczPbik5eii5GG6uivDwxDOOfiiiOzVFK0Yay1fuaFrndI47F5mqDnnMYXdAv9t6ouVABTJJdTPPix0rQ78aF226rkpkEdjfeLy
 ROOT = 'http://localhost:8000'
 
 class AdminMgr(APIView):
@@ -44,8 +34,8 @@ class AdminMgr(APIView):
                     'grant_type': 'password',
                     'username': request.data['username'],
                     'password': request.data['password'],
-                    'client_id': CLIENT_ID,
-                    'client_secret': CLIENT_SECRET,
+                    'client_id': request.data['client_id'],
+                    'client_secret': request.data['client_secret'],
                 },
             )
 
@@ -87,17 +77,32 @@ class UserAccount(APIView):
                     'grant_type': 'password',
                     'username': request.data['username'],
                     'password': request.data['password'],
-                    'client_id': CLIENT_ID,
-                    'client_secret': CLIENT_SECRET,
+                    'client_id': request.data['client_id'],
+                    'client_secret': request.data['client_secret'],
                 },
             )
 
             return Response(r.json())
         return Response(serializer.errors)
 
+    # update user
     def put(self , request):
-        # update user
-        return ''
+        serializer = UpdateUserSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+
+        r = requests.post(ROOT+'/o/token/', 
+                data={
+                    'grant_type': 'password',
+                    'username': request.data['username'],
+                    'password': request.data['password'],
+                    'client_id': request.data['client_id'],
+                    'client_secret': request.data['client_secret'],
+                },
+            )
+
+        return Response(r.json())
+        
 
     def delete(self , request):
         # logout
@@ -105,11 +110,9 @@ class UserAccount(APIView):
             request.user.auth_token.delete()
         except (AttributeError, ObjectDoesNotExist):
             pass
-        return 'logout'
+        return Response('logout')
 
 class UserToken(APIView):
-    # CLIENT_ID = '<client-id>'
-    # CLIENT_SECRET = '<client-secret>'
     permission_classes = [AllowAny]
 
     def post(self , request):
@@ -119,8 +122,8 @@ class UserToken(APIView):
                     'grant_type': 'password',
                     'username': request.data['username'],
                     'password': request.data['password'],
-                    'client_id': CLIENT_ID,
-                    'client_secret': CLIENT_SECRET,
+                    'client_id': request.data['client_id'],
+                    'client_secret': request.data['client_secret'],
                 },
             )
             return Response(r.json())
@@ -133,8 +136,8 @@ class UserToken(APIView):
             data={
                 'grant_type': 'refresh_token',
                 'refresh_token': request.data['refresh_token'],
-                'client_id': CLIENT_ID,
-                'client_secret': CLIENT_SECRET,
+                'client_id': request.data['client_id'],
+                'client_secret': request.data['client_secret'],
             },
         )
         return Response(r.json())
@@ -146,8 +149,8 @@ class UserToken(APIView):
                 ROOT+'/o/revoke_token/', 
                 data={
                     'token': request.data['token'],
-                    'client_id': CLIENT_ID,
-                    'client_secret': CLIENT_SECRET,
+                    'client_id': request.data['client_id'],
+                    'client_secret': request.data['client_secret'],
                 },
             )
             

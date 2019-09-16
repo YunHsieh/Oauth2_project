@@ -110,6 +110,16 @@ DATABASES = {
         'OPTIONS': {
               "init_command": "SET sql_mode='STRICT_TRANS_TABLES'",                                                              
         }
+    },
+    'cht_data': {
+        'NAME': 'cht_data',
+        'ENGINE': 'django.db.backends.mysql',
+        'HOST': '127.0.0.1',
+        'USER': 'root',
+        'PASSWORD': '123456',
+        'OPTIONS': {
+              "init_command": "SET sql_mode='STRICT_TRANS_TABLES'",                                                              
+        }
     }
 }
 

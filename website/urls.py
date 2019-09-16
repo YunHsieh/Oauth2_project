@@ -26,7 +26,6 @@ from app import api
 urlpatterns = [
     url(r'admin/', admin.site.urls),
     url(r'^o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
-    # url(r'^accounts/', include('django.contrib.auth.urls')),
 ]
 
 urlpatterns += [
