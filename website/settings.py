@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'oauth2_provider',
-    'app',
+    'siteconf',
     'users',
 ]
 
@@ -90,11 +90,13 @@ OAUTH2_PROVIDER = {
 
 REST_FRAMEWORK = { 
     'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.SessionAuthentication',
         'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
     ), 
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
-    )
+    ),
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema'
 } 
 
 # Database
@@ -102,17 +104,7 @@ REST_FRAMEWORK = {
 
 DATABASES = {
     'default': {
-        'NAME': 'users',
-        'ENGINE': 'django.db.backends.mysql',
-        'HOST': '127.0.0.1',
-        'USER': 'root',
-        'PASSWORD': '123456',
-        'OPTIONS': {
-              "init_command": "SET sql_mode='STRICT_TRANS_TABLES'",                                                              
-        }
-    },
-    'cht_data': {
-        'NAME': 'cht_data',
+        'NAME': 'potpourri',
         'ENGINE': 'django.db.backends.mysql',
         'HOST': '127.0.0.1',
         'USER': 'root',
@@ -142,6 +134,40 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [os.path.join(BASE_DIR, 'templates').replace('\\', '/')],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
+
+SWAGGER_SETTINGS = {
+    "api_version": 'v0.1',
+    "DEFAULT_GENERATOR_CLASS": "rest_framework.schemas.generators.BaseSchemaGenerator",
+    'SECURITY_DEFINITIONS': {
+        'api_key': {
+            'type': 'apiKey',
+            'in': 'header',
+            'name': 'Authorization'
+        }
+    },
+    'LOGIN_URL': 'rest_framework:login',
+    'LOGOUT_URL': 'rest_framework:logout',
+    'SHOW_REQUEST_HEADERS': True,
+    'USE_SESSION_AUTH': True,
+    'JSON_EDITOR': True,
+    "is_authenticated": False,
+    "is_superuser": False,
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/

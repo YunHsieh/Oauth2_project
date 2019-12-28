@@ -29,7 +29,7 @@ urlpatterns = [
 ]
 
 urlpatterns += [
-    url(r'^authorization/$', views.UserToken.as_view()),
+    url(r'^auth/$', views.UserToken.as_view()),
     url(r'^user/$', views.UserAccount.as_view()),
     url(r'^mgr/$', views.AdminMgr.as_view()),
 ]
