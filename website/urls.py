@@ -17,23 +17,20 @@ from django.contrib import admin
 from django.conf.urls import url, include
 from django.contrib.auth.models import User, Group
 
-from rest_framework.routers import DefaultRouter
+from users import views as ue_api
+from rest_framework_swagger.views import get_swagger_view
 
-from users import views
-from app import api
-
+schema_view = get_swagger_view(title='Potpourri')
 
 urlpatterns = [
     url(r'admin/', admin.site.urls),
     url(r'^o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
+    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    url(r'^swagger_ui/$', schema_view),
 ]
 
 urlpatterns += [
-    url(r'^auth/$', views.UserToken.as_view()),
-    url(r'^user/$', views.UserAccount.as_view()),
-    url(r'^mgr/$', views.AdminMgr.as_view()),
-]
-
-urlpatterns += [
-    url(r'^v1/api/', api.ListUsers.as_view()),
+    url(r'^auth/$', ue_api.UserToken.as_view()),
+    url(r'^user/$', ue_api.UserAccount.as_view()),
+    url(r'^mgr/$', ue_api.AdminMgr.as_view()),
 ]

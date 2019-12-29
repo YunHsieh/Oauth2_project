@@ -25,8 +25,8 @@ import coreapi
 from rest_framework.schemas import AutoSchema
 
 ROOT = 'http://localhost:8000'
-CLIENT_ID = 'TEESPmHm97K0vxSCjhg576CtuaJg0lMObBbvuTdf'
-CLIENT_SECRET = '9CvVvd2Jj48rYAM8rzPKizPCXnrxJUsqtWj8X5S6DJ6dfPreNfY4SQ4VHKfxn8cEV8PaFj0HEUVn2JkIILSWjC4j5YFs9b6TXJF6D73xX2v1CEJEg7pyhH8jcJtDwIRv'
+CLIENT_ID = 'KtOIWB6aLTzZq2VFigwIvXkKsgTM9bnBMP6eDAgK'
+CLIENT_SECRET = 'I8stLUaSq2ijXNfb9eoV08kGpY91VNPx9SY9QrqJglYvvyPEpmuSkUmpalAFWgZrTBlnb38LxZqnWSrtYgNpqtQeUGBNbQlfZP6strDjUXzOjtdULXUi0MgFeO17nZEs'
 
 class AdminMgr(APIView):
     authentication_classes = [OAuth2Authentication ]
@@ -45,16 +45,11 @@ class AdminMgr(APIView):
 
         return JsonResponse(list(userlist), safe=False)
 
+    # register user
     def post(self , request):
-        # register user
-        print(request.data)
         serializer = MgrSerializer(data=request.data) 
         if not request.data.get('groupname',''):
             return Response('No parameter groupname', status=status.HTTP_400_BAD_REQUEST)
-
-        for _group in request.data['groupname'].split(','):
-            if not Group.objects.get(name=_group):
-                return Response('No find this groupname : %s' % (_group), status=status.HTTP_400_BAD_REQUEST)
 
         # Validate the data
         if serializer.is_valid():
@@ -75,8 +70,10 @@ class AdminMgr(APIView):
             new_user = User.objects.get(username=request.data['username'])
 
             for _group in request.data['groupname'].split(','):
-                group = Group.objects.get(name=_group)
-                new_user.groups.add(group)
+                new_group, iscreated = Group.objects.get_or_create(name=_group)
+
+                new_user.groups.add(new_group)
+                # raise Response('No find this groupname : %s' % (_group), status=status.HTTP_400_BAD_REQUEST)
 
             return Response(r.json())
         return Response(serializer.errors)
@@ -85,6 +82,7 @@ class AdminMgr(APIView):
         serializer = MgrSerializer(User.objects.get(username=request['POST'].get('username','')), data=request.data)
         if serializer.is_valid():
             serializer.save()
+
         # update user
         return ''
     def delete(self , request):
@@ -114,7 +112,7 @@ class UserAccount(APIView):
         coreapi.Field('refresh_token', location='form'),
     ])
 
-    # update user
+    # update user password
     def put(self , request):
         _dict={ _key:_val[0] for _key,_val in dict(request.data).items()}
         _dict['username'] = request.user.username
