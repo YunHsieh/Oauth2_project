@@ -19,6 +19,8 @@ from django.contrib.auth.models import User, Group
 
 from users import views as ue_api
 from rest_framework_swagger.views import get_swagger_view
+from chatting import views
+
 
 schema_view = get_swagger_view(title='Potpourri')
 

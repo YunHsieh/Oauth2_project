@@ -39,11 +39,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'rest_framework_swagger',
     'rest_framework',
+    'rest_framework_swagger',
+    'django_elasticsearch_dsl_drf',
+    'django_elasticsearch_dsl',
     'oauth2_provider',
     'siteconf',
     'users',
+    'chatting',
 ]
 
 
@@ -88,7 +91,11 @@ OAUTH2_PROVIDER = {
     }
 }
 
-
+SUB_DIR = os.path.basename(os.path.dirname(__file__))
+DATABASE_ROUTERS = [
+    '{}.database_router.DatabaseAppsRouter'.format(SUB_DIR)
+]
+DATABASE_APPS_MAPPING = {'EL':'el'}
 
 REST_FRAMEWORK = { 
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -117,6 +124,16 @@ DATABASES = {
     }
 }
 
+
+ELASTICSEARCH_DSL = {
+    'el': {
+        'hosts': 'localhost:9200'
+    },
+}
+
+ELASTICSEARCH_DSL_INDEX_SETTINGS = {
+    'number_of_shards': 1
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
