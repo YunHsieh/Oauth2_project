@@ -95,7 +95,7 @@ SUB_DIR = os.path.basename(os.path.dirname(__file__))
 DATABASE_ROUTERS = [
     '{}.database_router.DatabaseAppsRouter'.format(SUB_DIR)
 ]
-DATABASE_APPS_MAPPING = {'EL':'el'}
+DATABASE_APPS_MAPPING = {'potpourri2':'test','EL':'el'}
 
 REST_FRAMEWORK = { 
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -126,7 +126,7 @@ DATABASES = {
 
 
 ELASTICSEARCH_DSL = {
-    'el': {
+    'default': {
         'hosts': 'localhost:9200'
     },
 }

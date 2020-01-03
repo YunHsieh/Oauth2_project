@@ -3,7 +3,7 @@ from django.conf import settings
  
 DATABASE_MAPPING = settings.DATABASE_APPS_MAPPING
  
- 
+print(DATABASE_MAPPING)
 class DatabaseAppsRouter(object):
     """
     A router to control all database operations on models for different
@@ -56,6 +56,7 @@ class DatabaseAppsRouter(object):
         根据app_label的值只在相应的数据库中创建一个表，如果删除该def或
         不指定过滤条件，则一个Model会在每个数据库里都创建一个表。
         """
+
         if db in DATABASE_MAPPING.values():
             return DATABASE_MAPPING.get(app_label) == db
         elif app_label in DATABASE_MAPPING:
