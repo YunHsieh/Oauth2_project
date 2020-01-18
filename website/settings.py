@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     'django_elasticsearch_dsl_drf',
     'django_elasticsearch_dsl',
     'oauth2_provider',
-    'siteconf',
+    'core',
     'users',
     'chatting',
 ]
@@ -115,7 +115,7 @@ DATABASES = {
     'default': {
         'NAME': 'potpourri',
         'ENGINE': 'django.db.backends.mysql',
-        'HOST': '127.0.0.1',
+        'HOST': 'db', # this need to same of the dockerfile
         'USER': 'root',
         'PASSWORD': '123456',
         'OPTIONS': {

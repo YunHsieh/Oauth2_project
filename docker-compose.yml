@@ -1,0 +1,83 @@
+version: '3'
+
+services:
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    restart: always
+    # volumes:
+    #   - db:/API_5G_Tools
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - es
+  db:
+    image: mariadb:10.2
+    environment:
+      - MYSQL_ROOT_PASSWORD=123456
+      - MYSQL_DATABASE=users
+      - MYSQL_USER=jerry
+      - MYSQL_PASSWORD=123456
+    restart: always
+    volumes:
+      - mydata:/myprojects
+    ports:
+      - "3306:3306"
+
+  es:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.8.6
+    container_name: elasticsearch-686
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+      - http.host=0.0.0.0
+      - http.port=9200
+      - transport.host=127.0.0.1
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "http.cors.allow-origin=http://127.0.0.1:1358"
+      - "http.cors.enabled=true"
+      - "http.cors.allow-headers=X-Requested-With,X-Auth-Token,Content-Type,Content-Length,Authorization"
+      - "http.cors.allow-credentials=true"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - es_data:/myprojects
+    # networks:
+    #   - esnet
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:6.8.6
+    # container_name: kibana-623
+    environment:
+      SERVER_NAME: kibana-server
+      ELASTICSEARCH_URL: http://elasticsearch-686:9200
+    # networks:
+    #   - esnet
+    depends_on:
+      - es
+    ports:
+      - "5601:5601"
+
+  es-hq:
+    image: elastichq/elasticsearch-hq:release-v3.5.12
+    container_name: es-hq-v3.5.12
+    # networks:
+    #   - esnet
+    depends_on:
+      - es
+    ports:
+      - "5000:5000"
+
+volumes:
+  mydata:
+    driver: local
+  es_data:
+    driver: local
+  es-hq:
+    driver: local
